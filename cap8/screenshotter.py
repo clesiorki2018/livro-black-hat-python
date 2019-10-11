@@ -12,7 +12,7 @@ import win32con
 import win32api
 
 # Obtém um handle para a janela principal do desktop
-hdesktop = win32gui.GetDesktopwindow()
+hdesktop = win32gui.GetDesktopWindow()
 
 # Determina o tamanho de todos os monitores em pixels
 width = win32api.GetSystemMetrics(win32con.SM_CXVIRTUALSCREEN)
@@ -21,7 +21,7 @@ left = win32api.GetSystemMetrics(win32con.SM_XVIRTUALSCREEN)
 top = win32api.GetSystemMetrics(win32con.SM_YVIRTUALSCREEN)
 
 # Cria um contexto de dispositivo
-desktop_dc = win32ui.GetWindowDC(hdesktop)
+desktop_dc = win32gui.GetWindowDC(hdesktop)
 img_dc = win32ui.CreateDCFromHandle(desktop_dc)
 
 # Cria um contexto de dispositivo na memória
